@@ -1,0 +1,282 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="static/styles/typeahead.css"/>
+<style>
+  @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .mb20 {
+    margin-bottom: 20px;
+  }
+
+  hgroup {
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  hgroup h1 {
+    font: 500 normal 1.625em "Roboto", Arial, Verdana, sans-serif;
+    color: #2a3644;
+    margin-top: 0;
+    line-height: 1.15;
+  }
+
+  hgroup h2.lead {
+    font: normal normal 1.125em "Roboto", Arial, Verdana, sans-serif;
+    color: #2a3644;
+    margin: 0;
+    padding-bottom: 10px;
+  }
+
+  .search-result .thumbnail {
+    /* border-radius: 0 !important; */
+    width: 15em;
+  }
+
+  .search-result:first-child {
+    margin-top: 0 !important;
+  }
+
+  .search-result {
+    margin-top: 20px;
+  }
+
+  .search-result .col-md-2 {
+    border-right: 1px dotted #ccc;
+    min-height: 140px;
+  }
+
+  .search-result ul {
+    padding-left: 0 !important;
+    list-style: none;
+  }
+
+  .search-result ul li {
+    font: 400 normal .85em "Roboto", Arial, Verdana, sans-serif;
+    line-height: 30px;
+  }
+
+  .search-result ul li i {
+    padding-right: 5px;
+  }
+
+  .search-result .col-md-7 {
+    position: relative;
+  }
+
+  .search-result h3 {
+    font: 500 normal 1.375em "Roboto", Arial, Verdana, sans-serif;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .search-result h3>a,
+  .search-result i {
+    color: #248dc1 !important;
+  }
+
+  .search-result p {
+    font: normal normal 1.125em "Roboto", Arial, Verdana, sans-serif;
+  }
+
+  .search-result span.plus {
+    position: absolute;
+    right: 0;
+    top: 126px;
+  }
+
+  .search-result span.plus a {
+    background-color: #248dc1;
+    padding: 5px 5px 3px 5px;
+  }
+
+  .search-result span.plus a:hover {
+    background-color: #414141;
+  }
+
+  .search-result span.plus a i {
+    color: #fff !important;
+  }
+
+  /* .search-result span.border {
+    display: block;
+    width: 97%;
+    margin: 0 15px;
+    border-bottom: 1px dotted #ccc;
+  } */
+
+  .search-result .meta-search li {
+    font-weight: 600;
+  }
+  .search-result .meta-search li > span{
+    font-weight: 100;
+  }
+
+  .highlight {
+    background-color: #a94442;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+
+</style>
+
+<html>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1><img width="100" height="80" src="https://1000logos.net/wp-content/uploads/2020/08/MongoDB-Emblem.jpg" />MongoDB Full Text Search Demo</h1>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+    <div class="row">
+      <div class="col-xs-1">
+        Any field:
+      </div>
+      <div class="col-xs-2">
+            <input id="queryAll" type="text" placeholder="search in all fields">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-1">
+        Title:
+      </div>
+      <div class="col-xs-2">
+            <input id="queryTitle" type="text" placeholder="search in title">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-1">
+        Fullplot:
+      </div>
+      <div class="col-xs-2">
+            <input id="queryFullplot" type="text" placeholder="search in fullplot">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-1">
+        Plot:
+      </div>
+      <div class="col-xs-2">
+            <input id="queryPlot" type="text" placeholder="search in plot">
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-1">
+        Cast:
+      </div>
+      <div class="col-xs-2">
+            <input id="queryCast" type="text" placeholder="search in cast">
+        </div>
+    </div>
+    <div class="row">
+        <div style="padding-left: 15px;">
+
+      <button type="button" class="btn btn-success" id="search_button">Search</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <hgroup class="mb20">
+    <h1>Search Results</h1>
+  </hgroup>
+
+  <section class="col-md-12" id="search-results-placholder"></section>
+</div>
+
+</html>
+
+
+<script src="https://twitter.github.io/typeahead.js/js/jquery-1.10.2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.bundle.min.js"></script>
+
+<script>
+
+
+  
+    $('#search_button').click(function() {
+      var queryAll = $('#queryAll').val();
+      var queryTitle = $('#queryTitle').val();
+      var queryFullplot = $('#queryFullplot').val();
+      var queryPlot = $('#queryPlot').val();
+      var queryCast = $('#queryCast').val();
+
+      $.ajax({
+          url: `/searchCompound?queryAll=${queryAll}&queryTitle=${queryTitle}&queryFullplot=${queryFullplot}&queryPlot=${queryPlot}&queryCast=${queryCast}`
+        }).done(function(results){
+          var jsonResults = JSON.parse(results).docs
+          console.log(jsonResults)
+          render(jsonResults)
+        })
+        .fail(function(err) {
+          console.log(err)
+        });
+
+    });
+  
+
+  $("#queryCast").keydown(function(e){
+    if(e.which === 13){
+        $("#search_button").click();
+    }
+  });
+
+  function render(results) {
+    var placholder = $('#search-results-placholder');
+    placholder.empty();
+
+    // update count
+    
+    //$('#result-count').html(results.length)
+    // update search query
+    //$('#search-query').html(letters)
+
+    let html = '';
+    $.each(results, function(index, item) {
+
+      let doc = item;
+      if (doc.poster == undefined) {
+        doc.poster = "static/no-picture.jpeg"
+      }
+      console.log(doc)
+
+      html += `
+      <article class="search-result row">
+        <div class="col-md-3">
+          <div class="thumbnail"><img src="${doc.poster}" alt="Lorem ipsum" /></div>
+        </div>
+        <div class="col-md-2">
+          <ul class="meta-search">
+            <li>Title: <span>${doc.title}</span></li>
+            <li>Released: <span>${doc.year}</span></li>
+            <li>Length: <span>${doc.runtime} mins</span></li>
+            <li>Rating: <span>${doc.imdb.rating}</span></li>
+            <li>Cast: <span>${doc.cast}</span></li>
+          </ul>
+        </div>
+        <div class="col-md-7 excerpet">
+          <p>${doc.fullplot}</p>
+          <p>Search score: ${item.score}</p>
+        </div>
+        <span class="clearfix borda"></span>
+      </article>
+    `
+    });
+    // place in html
+    placholder.append(html);
+  }
+
+  $(document).ready(function() {
+    search();
+  });
+</script>

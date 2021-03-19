@@ -1,0 +1,35 @@
+[
+    {
+        "$search": {
+            "text": {
+                "query": "!!queryParameter!!",
+                "path": { "wildcard" : "*" },
+                "fuzzy": {
+                    "maxEdits": 1,
+                    "prefixLength": 0
+                }
+            },
+            "highlight": { "path": ["title","fullplot"] }
+        }
+    }, {
+        "$project": {
+            "_id" : 0,
+            "poster" : 1,
+            "year" : 1,
+            "imdb.rating" : 1,
+            "runtime" : 1,
+            "fullplot" : 1,
+            "title" : 1,
+            "highlights": {"$meta": "searchHighlights"},
+            "score": {
+                "$meta": "searchScore"
+            }
+        }
+    },
+    {
+        "$limit": 15
+    },
+    {
+        "$sort": {"score": -1}
+    }
+]

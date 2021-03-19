@@ -1,0 +1,27 @@
+[
+    {
+      "$search": {
+        "index": "default",
+        "text": {
+          "query": "!!queryParameter!!",
+          "path": ["title","plot","fullplot"]
+        }
+      }
+    },
+    {
+      "$limit" : 10
+    },
+    {
+      "$project": {
+        "_id" : 0,
+        "poster" : 1,
+        "released" : 1,
+        "imdb.rating" : 1,
+        "runtime" : 1,
+        "fullplot" : 1,
+        "title" : 1,
+        "cast" : 1,
+        "score": { "$meta": "searchScore" }
+      }
+    }
+]

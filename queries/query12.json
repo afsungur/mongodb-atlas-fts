@@ -1,0 +1,60 @@
+[
+  {
+    "$search": {
+      "compound": {
+        "must": [{
+          "text": {
+             "query": "!!queryParameterAllTheFields!!",
+             "path": { "wildcard" : "*"}
+          }
+        }],
+        "should": [
+          {
+            "text": {
+              "query": "!!queryParameterTitle!!",
+              "path": "title"
+            }
+          },
+          {
+            "text": {
+              "query": "!!queryParameterFullplot!!",
+              "path": "fullplot"
+            }
+          },
+          {
+            "text": {
+              "query": "!!queryParameterPlot!!",
+              "path": "plot"
+            }
+          },
+          {
+            "text": {
+              "query": "!!queryParameterCast!!",
+              "path": "cast"
+            }
+          }
+          ],
+          "minimumShouldMatch": 1
+        }
+      }
+    },
+    {
+      "$limit" : 10
+    },
+    {
+      "$project": {
+        "_id" : 0,
+        "poster" : 1,
+        "year" : 1,
+        "imdb.rating" : 1,
+        "runtime" : 1,
+        "fullplot" : 1,
+        "title" : 1,
+        "cast" : 1,
+        "highlights": {"$meta": "searchHighlights"},
+        "score": {
+            "$meta": "searchScore"
+        }
+      }
+    }
+]
