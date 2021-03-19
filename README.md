@@ -6,6 +6,8 @@
 MongoDB Atlas Search makes it easy to build fast, relevant, full-text search capabilities on top of your data in the cloud. Available exclusively with MongoDB Atlas.
 Try MongoDB Atlas
 
+This tutorial has been built based on another repo: https://github.com/esteininger/mongodb-full-text-search-app
+
 In this tutorial we'll walk through to demonstrate the some capabilities of MongoDB Atlas Search.
 
 This tutorial demonstrates the following capabilities of MongoDB Atlas Search:
