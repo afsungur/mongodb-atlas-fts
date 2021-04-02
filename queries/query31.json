@@ -1,0 +1,29 @@
+[
+  {
+    "$search": {
+      "geoWithin": {
+        "path": "address.location",
+        "box": {
+          "bottomLeft": {
+            "type": "Point",
+            "coordinates": "!!ITWILLBEREPLACED!!"
+          },
+          "topRight": {
+            "type": "Point",
+            "coordinates": "!!ITWILLBEREPLACED!!"
+          }
+        }
+      }
+    }
+  },
+  {
+    "$limit": 10
+  },
+  {
+    "$project": {
+      "_id": 0,
+      "name": 1,
+      "address": 1
+    }
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "$search": {
+      "index" : "geonear",
+      "compound": {
+        "must" : {
+                "text": {
+                  "query": "!!WILLBEREPLACED!!",
+                  "path": "property_type",
+                  "fuzzy": {
+                    "maxEdits": 1,
+                    "maxExpansions": 100
+                  }
+                }
+        },
+        "should": [
+        {
+            "near": {
+                "origin": {
+                "type": "Point",
+                "coordinates": "!!WILLBEREPLACED!!"
+                },
+            "pivot": "!!WILLBEREPLACED!!",
+            "path": "address.location",
+            "score" : { "boost" : { "value" : 50}}
+            }
+        },
+        {
+           "text": {
+            "query": "!!WILLBEREPLACED!!",
+            "path": "description",
+            "score" : { "boost" : { "value" : 3}}
+          } 
+        }]
+      }
+    }
+  },
+  {
+    "$limit": 10
+  },
+  {
+    "$project": {
+      "_id": 0,
+      "property_type": 1,
+      "address": 1,
+      "description" : 1,
+      "name": 1,
+      "score": { "$meta": "searchScore" }
+    }
+  }
+]

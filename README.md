@@ -1,4 +1,3 @@
-
 [![N|Solid](https://webassets.mongodb.com/_com_assets/cms/MongoDB-Atlas-Logo-Black-hvfxuesorm.svg)](https://www.mongodb.com/atlas/search)
 
 # MongoDB Atlas Full-Text Search Demo
@@ -25,13 +24,13 @@ This tutorial demonstrates the following capabilities of MongoDB Atlas Search:
   - wildcard
   - regex
   - queryString
-
+- geoWithin
+  - near
+  
 - Below operators have not been implemented in this tutorial, yet.
   - equals
   - exists
-  - near
-  - geoSpatial
-  - geoWithin
+  - geoShape
 
 ## Prerequisites
 
@@ -1072,3 +1071,288 @@ Search with the following clause:
 
 
 ![querystring](screenshots/querystring.png)
+
+# 27) GeoSpatial Queries
+
+In this demo, we're using Mapbox API to visualize map information. If you'd like to test the GeoSpatial capabilities of Atlas Search in this demo toolkit, you'll need to obtain an access token. For more information, please check this: https://docs.mapbox.com/help/getting-started/access-tokens/.
+
+After you've got the token, please set the token value to the variable `accessTokenMapBox` in the `templates/static/maphelper.js` file,  in the 1st line.
+
+```javascript
+var accessTokenMapBox = 'pk.*****************uSA'
+```
+
+## 27.1 - Creating the Geospatial Search Index
+
+We'll have a new search index in different collection, `sample_airbnb.listingsAndReviews` on the field `address.location`. 
+
+In order to execute GeoSpatial queries in Atlas Search, we need to have specify the fields for Geo objects while creating index.
+
+![geo_spatial_index](screenshots/geo_spatial_index.png)
+
+```javascript
+{
+  "mappings": {
+    "fields": {
+      "address": {
+        "fields": {
+          "location": {
+            "type": "geo"
+          }
+        },
+        "type": "document"
+      }
+    }
+  }
+}
+```
+
+
+
+Verification of index creation:
+
+![geo_spatial_index_created](screenshots/geo_spatial_index_created.png)
+
+## 27.2 - Search Properties in a Circle Object
+
+### 27.2.1 - Scenario
+
+- We'd like to find the properties in a radius of 1000 meters of the specified location
+
+### 27.2.2 - Observe
+
+- Open the file `queries/query30.json` and observe the field `geoWithin`, `circle`, `center`, `radius`  fields under `$search` 
+
+### 27.2.3 - Backend
+
+- Open the file `server.py` 
+- Find the function `geo_within()` 
+- Analyze the `if` block starts with:
+  - `    if ( query_parameter_shape == "circle" ):` 
+- Frontend sends the following parameter:
+  - radius 
+  - Latitude and longtitude of the center 
+- Then backend executes the `$search` aggregation query.
+
+### 27.2.4 - Test
+
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+
+- Zoom-in enough to the city Barcelona to reach below level:
+
+![circle01](screenshots/circle01.png)
+
+- Put the marker with one click on an area as shown in the below:
+
+![circle02](screenshots/circle02.png)
+
+- Specify the radius as 5000 as shown in the below. As long as you change the radius parameter, the shape will be redrawn.
+
+![circle03](screenshots/circle03.png)
+
+- Hit the `Search` button
+- And, 10 records within the Circle will be retrieved from the search index and the `location` of the propery (`address.location.coordinates` in the document) will be drawn on the map.
+- On top of that, `street` and `name` information (respectively in the `address.street` and `name` fields in the record) will be shown as you click on the marker.
+
+![circle04](screenshots/circle04.png)
+
+- Click the `Clear` button and do a search on another location with different radius parameter.
+
+## 27.3 - Search Properties in a Box Object
+
+### 27.3.1 - Scenario
+
+- We'd like to find properties in a box (rectangle, square) shape.
+
+### 27.2.2 - Observe
+
+- Open the file `queries/query31.json` and observe the field `geoWithin`, `box`, `bottomLeft`, `topRight`  fields under `$search` 
+
+### 27.2.3 - Backend
+
+- Open the file `server.py` 
+- Find the function `geo_within()` 
+- Analyze the `if` block starts with:
+  - `    if ( query_parameter_shape == "box" ):` 
+- Frontend sends the following parameter:
+  - Latitude and longtitude of the bottom left point
+  - Latitude and longtitude of the bottom top right
+- Then backend executes the `$search` aggregation query.
+- Bottom left point must located in lower location of the top right point (Atlas search requirement)
+
+### 27.2.4 - Test
+
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- In the top dropdown menu choose `Box` rather than `Circle`
+- Automatically Box related settings will be shown as shown in the below.
+
+![box01](screenshots/box01.png)
+
+- Zoom in enough to the center of the city Barcelona. 
+- Find a location to position `Bottom Left` point and click on the map.
+- Then find another location to position `Top Right` point and click on the map. Box shape will be automatically drawn (just after second marker). Don't forget, `Top Right` position must be position than the `Bottom Left`.
+
+![box02](screenshots/box02.png)
+
+- Hit the `Search` button
+- And, 10 records within the Box will be retrieved from the search index and the `location` of the propery (`address.location.coordinates` in the document) will be drawn on the map.
+- On top of that, `street` and `name` information (respectively in the `address.street` and `name` fields in the record) will be shown as you click on the marker.
+
+![box03](screenshots/box03.png)
+
+- Click the `Clear` button and do a search on another locations.
+
+## 27.4 - Search Properties in a Polygon Object
+
+### 27.4.1 - Scenario
+
+- We'd like to find properties in a polygon shape. 
+
+### 27.4.2 - Observe
+
+- Open the file `queries/query32.json` and observe the field `geoWithin`  field under `$search` 
+
+### 27.4.3 - Backend
+
+- Open the file `server.py` 
+- Find the function `geo_within()` 
+- Analyze the `if` block starts with:
+  - `    elif  ( query_parameter_shape in ["polygon","multipolygon"] ):`
+- Frontend sends the following parameter:
+  - Latitude and longtitude of multiple points which forms the polygon shape
+  - If there are 2 polygons then frontend sends all the points of 2 polygons
+- Then backend executes the `$search` aggregation query.
+
+### 27.4.4 - Test
+
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- In the top dropdown menu choose `Polygon` rather than `Circle`
+- Automatically Polygon related settings will be shown as shown in the below.
+
+![polygon01](screenshots/polygon01.png)
+
+- Zoom in enough to the center of the city Barcelona. 
+- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over. 
+- After you add the 3rd point, the polygon will be drawn automatically. You can add more points.
+- After you add some points, you will end up a polygon as shown in the below.
+
+![polygon02](screenshots/polygon02.png)
+
+- Hit the `Search` button.
+- And, 20 records within the shape will be retrieved from the search index and the `location` of the propery (`address.location.coordinates` in the document) will be drawn on the map.
+- On top of that, `street` and `name` information (respectively in the `address.street` and `name` fields in the record) will be shown as you click on the marker.
+
+![polygon03](screenshots/polygon03.png)
+
+- Click the `Clear` button and do a search on another locations.
+
+## 27.5 - Search Properties in Multi Polygon Object
+
+- First, please review the section 27.4.
+
+### 27.5.1 - Test
+
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- In the top dropdown menu choose Polygon rather than `Circle`
+- Automatically Polygon related settings will be shown as shown in the below.
+
+![polygon01](screenshots/polygon01.png)
+
+- Zoom in enough to the center of the city Barcelona. 
+- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over. 
+- After you add the 3rd point, the polygon will be drawn automatically.
+- After you add some points, you will end up a polygon as shown in the below.
+
+![multipolygon01](screenshots/multipolygon01.png)
+
+- Hit the `Switch to New Polygon` button.
+- Start to add points by clicking on the map and it will add points for the second polygon.
+- After you add some points, you will end up two polygons as shown in the below.
+- This demo toolkit only supports 2 polygons as Multi-Polygon.
+
+![multipolygon02](screenshots/multipolygon02.png)
+
+- Hit the `Search` button.
+  - And the points in these 2 polygons up to total 20 records will be retrieved as shown in the below.
+
+![multipolygon03](screenshots/multipolygon03.png)
+
+
+
+## 28) GeoSpatial and Compound
+
+### 28.1 - Scenario
+
+We'd like to find the properties around a point where the type of the property (`property_type ` field in the document) should be "apartment" with up to 1 character mistake (fuzzy), and the description (`description` field in the document) might include the following words "duplex air conditioner kitchen public transportation". 
+
+We'd like to boost the records if it is close to the point which we specified.
+
+### 28.2 - Index Creation
+
+We'll create an index where has Geolocation field ( `address.location` ) indexed and the other fields `property_type` and `description` indexed as shown in the below.
+
+![geonear01](screenshots/geonear01.png)
+
+```javascript
+{
+  "mappings": {
+    "fields": {
+      "address": {
+        "fields": {
+          "location": {
+            "type": "geo"
+          }
+        },
+        "type": "document"
+      },
+      "description": {
+        "type": "string"
+      },
+      "property_type": {
+        "type": "string"
+      }
+    }
+  }
+}
+```
+
+
+
+Verification of index creation:
+
+![geonear02](screenshots/geonear02.png)
+
+### 28.3 - Observe
+
+- Open the file `queries/query34.json` and observe the field `compound`  , `should` , `must` , `near` field under `$search` 
+
+### 27.4.3 - Backend
+
+- Open the file `server.py` 
+- Find the function `geo_near()` 
+- Frontend sends the following parameter:
+  - Latitude and longtitude of the center point
+  - Pivot parameter
+  - Property type
+  - Description Keyword
+- Then backend executes the `$search` aggregation query.
+
+### 27.4.4 - Test
+
+- Open the browser and access to the following url: `http://localhost:5010/geoNear` 
+- Find the center of the city Barcelona and click on the map, it will drop a marker on the map.
+- You should see the below screen.
+
+![geonear03](screenshots/geonear03.png)
+
+- Then fill out the form with the following parameters:
+  - Pivot value: 10000
+  - Property type: "aparment" (we'll test fuzzy too)
+  - Keyword (Description) :  "duplex air conditioner kitchen public transportation"
+
+- And then hit the `Search` button and you'll see the below screen.
+
+![geonear04](screenshots/geonear04.png)
+
+As you click on a marker, in just below of the map, you'll see the `description` of the property (`description` field in the document).
+

@@ -1,0 +1,27 @@
+[
+    {
+      "$search": {
+        "geoWithin": {
+          "circle": {
+            "center": {
+              "type": "Point",
+              "coordinates": "!!WILLBEREPLACED!!"
+            },
+            "radius": "!!WILLBEREPLACED!!"
+          },
+          "path": "address.location"
+        }
+      }
+    },
+    {
+      "$limit": 10
+    },
+    {
+      "$project": {
+        "_id": 0,
+        "name": 1,
+        "address": 1,
+        "score": { "$meta": "searchScore" }
+      }
+    }
+]

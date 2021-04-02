@@ -1,0 +1,138 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+crossorigin=""></script>
+
+<style>
+  @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .mb20 {
+    margin-bottom: 20px;
+  }
+
+  hgroup {
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  #mapid { height: 400px; width: 1000px; }
+
+</style>
+
+<html>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1><img width="100" height="80" src="https://1000logos.net/wp-content/uploads/2020/08/MongoDB-Emblem.jpg" />MongoDB Geo Search Demo - Geo & Near & Compound</h1>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+    <div id="shape-settings"></div>
+    <div id="mapid"></div>
+    <div id="description_text"></div>
+    
+</div>
+</html>
+
+<script src="https://twitter.github.io/typeahead.js/js/jquery-1.10.2.min.js"></script>
+<script src="maphelper.js"></script>
+
+<script>
+
+    function renderSettings() {
+        var placeholder = $('#shape-settings');
+        placeholder.empty();
+        
+        let html = '';
+        html += `
+                <hgroup class="mb20">
+                    <h1>Settings</h1>
+                </hgroup>
+                <div class="row">
+                    <div class="col-xs-2">
+                        Pivot Value:
+                    </div>
+                    <div class="col-xs-5">
+                        <input type="number" id="pivot"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        Property Type:
+                    </div>
+                    <div class="col-xs-5">
+                        <input type="text" id="property_type"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-2">
+                        Keyword (Description):
+                    </div>
+                    <div class="col-xs-5">
+                        <input type="text" size="50" id="keyword"/>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success" id="search_button">Search</button>
+                <button type="button" class="btn btn-success" id="clear_circle">Clear</button>
+
+        `;
+        
+
+        
+        placeholder.append(html)
+        initMap("Circle")
+    }
+
+
+    $('#shape-settings').on('click', '#clear_circle', function() {
+        markerFilterGroup.clearLayers();
+        circleFilterGroup.clearLayers();
+        markerResultsFilterGroup.clearLayers();
+    });
+
+    
+
+    $('#shape-settings').on('click', '#search_button', function() {
+    
+        var propertyType = $('#property_type').val();
+        var keyword = $('#keyword').val();
+        var pivot = $('#pivot').val();
+        let marker_coord = null;
+            markerFilterGroup.eachLayer((layer) => {
+                marker_coord =  layer.getLatLng()
+        });
+        if (marker_coord == null ){ 
+            alert("Please drop a market first!")
+            return false;
+        }
+
+        $.ajax({
+            url: `/geoNear?pivot=${pivot}&latitude=${marker_coord.lat}&longtitude=${marker_coord.lng}&property_type=${propertyType}&keyword=${keyword}`
+            }).done(function(results){
+                var jsonResults = JSON.parse(results).docs
+                console.log(jsonResults)
+                addResultMarkersNear(jsonResults)
+            })
+            .fail(function(err) {
+            console.log(err)
+            });
+    
+    });
+
+
+  $( document ).ready(function() {
+    renderSettings();
+});
+
+</script>

@@ -1,0 +1,255 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+crossorigin=""/>
+
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+crossorigin=""></script>
+
+<style>
+  @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .mb20 {
+    margin-bottom: 20px;
+  }
+
+  hgroup {
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  #mapid { height: 400px; width: 1000px; }
+
+</style>
+
+<html>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1><img width="100" height="80" src="https://1000logos.net/wp-content/uploads/2020/08/MongoDB-Emblem.jpg" />MongoDB Geo Search Demo - GeoWithin</h1>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+    <div class="row">
+      <div class="col-xs-1">
+        Type:
+      </div>
+      <div class="col-xs-2">
+        <select id="shapes">
+            <option selected>Circle</option>
+            <option >Box</option>
+            <option>Polygon</option>
+        </select>
+      </div>
+    </div>
+   
+</div>
+
+<div class="container">
+    <div id="shape-settings"></div>
+    <div id="mapid"></div>
+</div>
+</html>
+
+<script src="https://twitter.github.io/typeahead.js/js/jquery-1.10.2.min.js"></script>
+<script src="maphelper.js"></script>>
+
+<script>
+
+    function renderSettings(shape) {
+        var placeholder = $('#shape-settings');
+        placeholder.empty();
+        
+        let html = '';
+        if (shape === "Circle") {
+            html += `
+                    <hgroup class="mb20">
+                        <h1>Circle Settings</h1>
+                    </hgroup>
+                    <div class="row">
+                        <div class="col-xs-1">
+                            Radius (in meters):
+                        </div>
+                        <div class="col-xs-4">
+                            <input type="number" id="radius"/>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success" id="search_button">Search</button>
+                    <button type="button" class="btn btn-success" id="clear_circle">Clear</button>
+
+            `;
+        
+
+        } else if (shape === "Box") {
+            html += `
+                    <hgroup class="mb20">
+                    <h1>Box Settings</h1>
+                    </hgroup>
+                    <button type="button" class="btn btn-success" id="search_button">Search</button>
+                    <button type="button" class="btn btn-success" id="clear_box_drop_marker">Clear</button>
+
+
+
+            
+            `;
+        } else if (shape === "Polygon") {
+            html += `
+                    <hgroup class="mb20">
+                    <h1>Polygon Settings</h1>
+                    </hgroup>
+                    <button type="button" class="btn btn-success" id="search_button">Search</button>
+                    <button type="button" class="btn btn-success" id="clear_polygon_drop_marker">Clear</button>
+                    <button type="button" class="btn btn-success" id="add_new_polygon">Switch to New Polygon</button>
+            `;
+        }
+        placeholder.append(html)
+        initMap(shape)
+    }
+
+    $('#shapes').change(function () {
+        var shape=$('#shapes option:selected').text();
+        renderSettings(shape)
+    });
+
+
+    $('#shape-settings').on('change keyup', '#radius', function() {
+        
+        let marker_coord = null;
+        markerFilterGroup.eachLayer((layer) => {
+            marker_coord = layer.getLatLng()        
+            });
+
+        if (marker_coord == null) {
+            alert("First drop a marker on the map!")
+            return false
+        }
+        radius = $("#radius").val()
+        circleFilterGroup.clearLayers()
+        var circle = L.circle(marker_coord, {
+          color: "red",
+          fillColor: "#f03",
+          fillOpacity: 0.5,
+          radius: radius
+        }).addTo(circleFilterGroup);
+       });
+
+    $('#shape-settings').on('click', '#clear_circle', function() {
+        markerFilterGroup.clearLayers();
+        circleFilterGroup.clearLayers();
+        markerResultsFilterGroup.clearLayers();
+    });
+
+    $('#shape-settings').on('click', '#clear_box_drop_marker', function() {
+        markerFilterGroup.clearLayers();
+        rectangleLayerGroup.clearLayers();
+        markerResultsFilterGroup.clearLayers();
+    });
+
+    $('#shape-settings').on('click', '#clear_polygon_drop_marker', function() {
+        markerFilterGroup.clearLayers();
+        polygonLayerGroup.clearLayers();
+        markerFilterGroup2.clearLayers();
+        polygonLayerGroup2.clearLayers();
+        markerResultsFilterGroup.clearLayers();
+        isItFor2NDPolygon = false;
+    });
+
+    $('#shape-settings').on('click', '#add_new_polygon', function() {
+        if (isItFor2NDPolygon) {
+            alert("This demo toolkit supports maximum 2 polygons")
+            return false
+        }
+        isItFor2NDPolygon = true;
+    });
+
+    $('#shape-settings').on('click', '#search_button', function() {
+    
+        shape=$('#shapes option:selected').text()
+        if (shape === "Circle") {
+            var radius = $('#radius').val();
+            let marker_coord = null;
+                markerFilterGroup.eachLayer((layer) => {
+                    marker_coord =  layer.getLatLng()
+            });
+                  
+            $.ajax({
+                url: `/geoWithin?shape=circle&radius=${radius}&latitude=${marker_coord.lat}&longtitude=${marker_coord.lng}`
+                }).done(function(results){
+                    var jsonResults = JSON.parse(results).docs
+                    console.log(jsonResults)
+                    addResultMarkers(jsonResults)
+                })
+                .fail(function(err) {
+                console.log(err)
+                });
+        } else if ( shape === "Box") {
+            let marker_arr=[]
+            markerFilterGroup.eachLayer(function(layer) {
+                marker_arr.push(layer.getLatLng())
+            })
+
+            $.ajax({
+                url: `/geoWithin?shape=box&latitude0=${marker_arr[0].lat}&longtitude0=${marker_arr[0].lng}&latitude1=${marker_arr[1].lat}&longtitude1=${marker_arr[1].lng}`
+                }).done(function(results){
+                    var jsonResults = JSON.parse(results).docs
+                    console.log(jsonResults)
+                    addResultMarkers(jsonResults)
+                })
+                .fail(function(err) {
+                console.log(err)
+            });
+
+
+        } else if ( shape === "Polygon") {
+            let coord_array=[]
+            markerFilterGroup.eachLayer(function(layer) {
+                coord = []
+                coord.push (layer.getLatLng().lng)
+                coord.push (layer.getLatLng().lat)
+                console.log("coord:" + coord)
+                coord_array.push(coord)
+            })
+            coord_array_str = coord_array.join('|')
+
+            coord_array=[]
+            markerFilterGroup2.eachLayer(function(layer) {
+                coord = []
+                coord.push (layer.getLatLng().lng)
+                coord.push (layer.getLatLng().lat)
+
+                coord_array.push(coord)
+            })
+            coord_array_str_2 = coord_array.join('|')
+
+            let shapeType = "polygon"
+            if (coord_array.length > 0) {
+                shapeType = "multipolygon"
+            }
+            
+            $.ajax({
+                url: `/geoWithin?shape=${shapeType}&coordinatesPolygon01=${coord_array_str}&coordinatesPolygon02=${coord_array_str_2}`
+                }).done(function(results){
+                    var jsonResults = JSON.parse(results).docs
+                    console.log(jsonResults)
+                    addResultMarkers(jsonResults)
+                })
+                .fail(function(err) {
+                console.log(err)
+            });
+        }
+    });
+
+  $( document ).ready(function() {
+    // start the page with circle option
+    renderSettings('Circle');
+});
+
+</script>
