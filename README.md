@@ -925,6 +925,8 @@ We'd like to execute wildcard search on the `title` and/or `fullplot` fields.
 
 Wildcard operation like regex works well with not the analyzed fields with the Standard or similar analyzer. Therefore, we use Keyword Analyzer to index data exactly what shape it is already.
 
+Create a new search index with the name "keyword_title_fullplot" and below mappings:
+
 ```javascript
 {
   "mappings": {
