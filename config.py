@@ -1,1 +1,1 @@
-mongo_uri="mongodb+srv://main_user:*****@fstest.5tka5.mongodb.net/sample_airbnb"
+mongo_uri="mongodb+srv://*****:*****@mediatest.5tka5.mongodb.net/myFirstDatabase"

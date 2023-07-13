@@ -10,10 +10,10 @@ import json
 app = Flask(__name__,             
             static_url_path='', 
             static_folder='templates/static',)
-conn = pymongo.MongoClient(mongo_uri, ssl_cert_reqs=ssl.CERT_NONE)
+conn = pymongo.MongoClient(mongo_uri)
 collection = conn['sample_mflix']['movies']
 collection_airbnb = conn['sample_airbnb']['listingsAndReviews']
-# endpoint
+# endpoint``
 @app.route('/search', methods=['GET'])
 def search():
     with open("queries/query01.json", "r", encoding = 'utf-8') as query_file:
@@ -226,6 +226,18 @@ def geo_near():
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route('/autocomplete_test')
+def index_autocomplete_page():
+    return render_template("autocomplete_test.html")
+
+@app.route('/highlight_title_test')
+def index_highlight_title_test():
+    return render_template("highlight_title_test.html")
+
+@app.route('/highlight_fullplot_test')
+def index_highlight_fullplot_test():
+    return render_template("highlight_fullplot_test.html")
 
 @app.route('/compound')
 def index_compound():

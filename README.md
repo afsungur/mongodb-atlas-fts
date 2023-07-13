@@ -15,19 +15,21 @@ This tutorial demonstrates the following capabilities of MongoDB Atlas Search:
 - Highlighting
 - Different Language (arabic)
 - Used Operators
+
   - text
   - phrase
   - autocomplete
-  - compound 
-  - span 
+  - compound
+  - span
   - phrase
   - wildcard
   - regex
   - queryString
 - geoWithin
+
   - near
-  
 - Below operators have not been implemented in this tutorial, yet.
+
   - equals
   - exists
   - geoShape
@@ -35,13 +37,14 @@ This tutorial demonstrates the following capabilities of MongoDB Atlas Search:
 ## Prerequisites
 
 This demo toolkit has been tested on the following environment successfully.
-- Server: MongoDB Atlas Cluster v4.4.4  
-- Client: 
-	- MacOS 11.2.2
-	- Python 3.9.2 
-	- Flask 1.1.2 
-	- Pymongo 3.11.3
-	- Dnspython 1.16.0
+
+- Server: MongoDB Atlas Cluster v4.4.4
+- Client:
+  - MacOS 11.2.2
+  - Python 3.9.2
+  - Flask 1.1.2
+  - Pymongo 3.11.3
+  - Dnspython 1.16.0
 
 ---
 
@@ -50,6 +53,7 @@ This demo toolkit has been tested on the following environment successfully.
 Load the default MongoDB Atlas Sample Dataset into a MongoDB Atlas Cluster. Follow the tutorial on the link: https://docs.atlas.mongodb.com/sample-data/
 
 ## 2) Verification of the load
+
 After the load is completed, please check the following collection that has the movie data.
 `sample_mflix.movies`
 
@@ -59,7 +63,7 @@ Check example records and have a look at the following fields: `title`, `fullplo
 
 ## 3) Creating Default Search Index
 
-Choose the collection `sample_mflix.movies` and click the `Search Indexes` pane. 
+Choose the collection `sample_mflix.movies` and click the `Search Indexes` pane.
 Create the search index with the following JSON:
 
 ```javascript
@@ -69,6 +73,7 @@ Create the search index with the following JSON:
   }
 }
 ```
+
 Dynamic index
 
 Make sure that the search index has been built, as shown in the below.
@@ -104,11 +109,13 @@ Find the collection `sample_mflix.movies` and import the following aggregation q
   }
 ]
 ```
+
 Output should look like as shown in the below.
 
 ![](screenshots/example_search_query_in_aggui.png)
 
 ### 5.2) Executing a single word (`crime`) search in another field (`title`)
+
 ```javascript
 [
     {
@@ -124,6 +131,7 @@ Output should look like as shown in the below.
 ```
 
 ### 5.3) Executing a single word (`crime`) search in one single field (`title`) and limit the number of results to `3`:
+
 ```javascript
 [
     {
@@ -142,6 +150,7 @@ Output should look like as shown in the below.
 ```
 
 ### 5.4) Executing a single word (`crime`) search in one single field (`title`) and limiting the number of results to `3` and bringing back only some of the fields (`title`,`fullplot`,`plot`) not all of them
+
 ```javascript
 [
     {
@@ -204,6 +213,7 @@ These are only a few initial examples of search. Let's go through with real-life
 Edit the file `config.py` in the root folder of the project with the full connection string of Atlas. Therefore, flask application can access the Atlas database.
 
 ## 7) Start the Flask App
+
 ```sh
 $ python3 server.py
 ```
@@ -224,18 +234,18 @@ fuat.sungur@Fuats-MacBook-Pro:~/projects/mongodb-atlas-fts
  * Debugger PIN: 145-086-476
 ```
 
-Open the browser and access to the following url: `http://localhost:5010/` 
+Open the browser and access to the following url: `http://localhost:5010/`
 
 ---
 
-## 8) Analyze the `server.py` 
+## 8) Analyze the `server.py`
 
-`server.py` starts the web server and renders the `index.html` file with the proper parameters when you access the page `http://localhost:5010/` 
+`server.py` starts the web server and renders the `index.html` file with the proper parameters when you access the page `http://localhost:5010/`
 `server.py` initially has one HTTP GET endpoint, `/search`.
 
-- This `/search` endpoint is called by frontend application (HTML/JAVASCRIPT). 
+- This `/search` endpoint is called by frontend application (HTML/JAVASCRIPT).
 - This endpoint accepts the parameter `query` as HTTP GET request parameter and it is filled by user in the frontend.
-- When enduser clicks the search button, this `search` endpoint will get triggered. 
+- When enduser clicks the search button, this `search` endpoint will get triggered.
 - Whenever endpoint is called, the necessary file will be opened, and the placeholder will be replaced by the query parameter. In production environment, it should not open a file for every HTTP call.
 - Aggregation query with the `$search` stage is executed and results are sent back to the caller / frontend.
 
@@ -245,16 +255,16 @@ Whenever you make a change in the `server.py` file, you don't need to restart th
 
 ## 9) First Atlas Search Query in Flask Application
 
-- Check the content of the file `queries/query01.json`. 
+- Check the content of the file `queries/query01.json`.
 - `server.py` opens this file in the `/search` endpoint  (`search()` function ) and replaces the placeholder with the query parameters.
-- What does this query do? 
-	- This search query, makes a single word search operation on the field `title` by using the search index `default`. 
+- What does this query do?
+  - This search query, makes a single word search operation on the field `title` by using the search index `default`.
 - Observation
-	- Search the words in the below and observe the results:
-		- *"crime"*
-		- *"god"*
-		- *"battle"*
-		- *"hwayi"*
+  - Search the words in the below and observe the results:
+    - *"crime"*
+    - *"god"*
+    - *"battle"*
+    - *"hwayi"*
 - You also check the "Developer Tools > Console" in the browser to see the returned data from backend:
 
 ![developertools](screenshots/developertools.png)
@@ -265,15 +275,14 @@ Whenever you make a change in the `server.py` file, you don't need to restart th
 
 ### 10.1 - Observe
 
-- Check the content of the file `queries/query02.json`. 
+- Check the content of the file `queries/query02.json`.
 
 ### 10.2 - Modify `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query02.json` (line 18). And save the file `server.py`, it triggers flask server to reload the content automatically. 
+- Change the accessed filename in `server.py` to `queries/query02.json` (line 18). And save the file `server.py`, it triggers flask server to reload the content automatically.
+- What does this query do?
 
-- What does this query do? 
-	- This query almost same with the query `query01.json`. The only difference is that, in `query02.json` we are targeting another field to search data.
-	
+  - This query almost same with the query `query01.json`. The only difference is that, in `query02.json` we are targeting another field to search data.
 
 ### 10.3 - Test the changes
 
@@ -296,17 +305,17 @@ The words we typed in the search field will be searched seperately in the field 
 
 ### 11.1 - Observe
 
-- Check the content of the file `queries/query03.json`. 
+- Check the content of the file `queries/query03.json`.
 - Observe the array field of `path`. We do search on multiple fields now.
 
 ### 11.2 - Modify `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query03.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query03.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 11.3 - Test the changes
 
 - Make a search with the following parameter, it will search for the given word only on two fields (fullplot, plot)
-	- "*immigrant*"
+  - "*immigrant*"
 
 ---
 
@@ -314,18 +323,18 @@ The words we typed in the search field will be searched seperately in the field 
 
 ### 12.1 - Observe
 
-- Check the content of the file `queries/query04.json`. 
-- Observe the `wildcard` option. 
+- Check the content of the file `queries/query04.json`.
+- Observe the `wildcard` option.
 - It executes search on any proper fields
 
 ### 12.2 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query04.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query04.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 12.3 - Test the changes
 
 - Make search operation with the following words
-	- "*immigrant*"
+  - "*immigrant*"
 
 ---
 
@@ -333,19 +342,19 @@ The words we typed in the search field will be searched seperately in the field 
 
 ### 13.1 - Observe
 
-- Check the content of the file `queries/query05.json`. 
-- Observe the `wildcard` option with the parameter `*plot` 
+- Check the content of the file `queries/query05.json`.
+- Observe the `wildcard` option with the parameter `*plot`
 - It will allow search operation to be done on any proper fields that ends with `plot`. For the collection `sample_mflix.movies` it is going to be `fullplot` and `plot` fields.
 
 ### 13.2 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query05.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query05.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 13.3 - Test the changes
 
 - Make two search operations with the following words
-	- "*police*"
-	- "*fire*"
+  - "*police*"
+  - "*fire*"
 
 ---
 
@@ -353,7 +362,7 @@ The words we typed in the search field will be searched seperately in the field 
 
 ### 14.1 - Scenario Definition
 
-- Let's try to bring movies related to *"Jimmie Shannon".* 
+- Let's try to bring movies related to *"Jimmie Shannon".*
 
 ### 14.2 - Modify the `server.py` file
 
@@ -363,11 +372,9 @@ The words we typed in the search field will be searched seperately in the field 
 
 - Come back to browser and put the words in the text field, *"Jimmie Shannon".*
   - The problem here is that,  search engine brings the data which even doesn't have the word "Jimmie". Please have a look at the browser and use the browser search (find) function to search the words in the browser separately "Jimmie" and "Shannon
-    . There are some records other than the first one, even they didn't have the word  "Jimmie" , those records were listed because those only includes "Shannon". 
+    . There are some records other than the first one, even they didn't have the word  "Jimmie" , those records were listed because those only includes "Shannon".
 
 ![](screenshots/without_phrase.png)
-
-
 
 But our intention was to search two words ("*Jimmie*" and "*Shannon*") together. We can use `phrase` operator to achieve this.
 
@@ -375,21 +382,23 @@ Let's fix the problem.
 
 ### 14.4 - Observe
 
-- Check the content of the file `queries/query06.json`. 
-- Observe the `phrase` option. 
+- Check the content of the file `queries/query06.json`.
+- Observe the `phrase` option.
+
 ### 14.5 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query06.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query06.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
-### 14.6 - Test the changes 
-  - Do the following search again: "*Jimmie Shannon*", and you'll see only one record now. 
+### 14.6 - Test the changes
+
+- Do the following search again: "*Jimmie Shannon*", and you'll see only one record now.
 
 ![phrase01](screenshots/phrase01.png)
 
-  - Do another search: "*al pacino*" and observe the results. 
-      - The words "*al pacino*" should exist together in any field and they have to be matched exactly as query, since the parameter `slop` is `0` in the `phrase` operator.
-      - Search in the browser the words "*al pacino*" together, every record on the screen should have these words together.
-      - ![phrase02](screenshots/phrase02.png)
+- Do another search: "*al pacino*" and observe the results.
+  - The words "*al pacino*" should exist together in any field and they have to be matched exactly as query, since the parameter `slop` is `0` in the `phrase` operator.
+  - Search in the browser the words "*al pacino*" together, every record on the screen should have these words together.
+  - ![phrase02](screenshots/phrase02.png)
 
 ---
 
@@ -397,14 +406,12 @@ Let's fix the problem.
 
 ### 15.1 - Test a query
 
-- Let's make a search with the words "*man woman*" with the same search query `query06.json` as Step 14. 
-- It will return a few records and the words "*man woman*" should be next to each other and should be matched exactly as query. 
+- Let's make a search with the words "*man woman*" with the same search query `query06.json` as Step 14.
+- It will return a few records and the words "*man woman*" should be next to each other and should be matched exactly as query.
 - Search in the browser the words "*man woman*" , the results will be as shown in the below, only 3 records will be matched.
   - 2nd record is matched because between the words "*man*" and "*woman*" there is `,` (comma) and default analyzer already discards it.
 
 ![manwoman_slop_0](screenshots/manwoman_slop_0.png)
-
-
 
 ### 15.2 - What we want to achieve
 
@@ -413,14 +420,12 @@ Let's fix the problem.
 
 ### 15.3 - Observe
 
-
-- Check the content of the file `queries/query07.json`. 
+- Check the content of the file `queries/query07.json`.
 - Observe the `phrase` option with the `slop` parameter.
 
 ### 15.4 - Modify the `server.py` file
 
-
-- Change the accessed filename in `server.py` to `queries/query07.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query07.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 15.5 - Test the changes
 
@@ -434,7 +439,6 @@ Let's fix the problem.
 
 ### 15.6 - Another test
 
-
 - Change the `slop` value to 2 and try it again. You will see more matched results.
 
 ---
@@ -443,11 +447,11 @@ Let's fix the problem.
 
 ### 16.1 - Observe
 
-- Check the content of the file `queries/query08.json`. 
+- Check the content of the file `queries/query08.json`.
 
 ### 16.2 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query08.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query08.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 16.3 - Test
 
@@ -456,24 +460,24 @@ Let's fix the problem.
 
 ### 16.4 - What we want to achieve
 
-Let's fix the problem. 
+Let's fix the problem.
 
 We want our search engine to be tolerant with certain limits, in the case if we made typo error
 
 ### 16.5 - Observe
 
-- Check the content of the file `queries/query09.json`. 
+- Check the content of the file `queries/query09.json`.
   - Observe the `fuzzy` operator with the `maxEdits` and `maxExpansions` parameters.
 
 ### 16.6 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query09.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query09.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 16.7 - Test the changes
 
 - Observation
-	- Do the same search again: *"nrw yprk".*
-	- What does query do? Every single word in the search can have maximum one character change (`maxEdits`) and it is evaluated under certain number of possibilities (`maxExpansions`).
+  - Do the same search again: *"nrw yprk".*
+  - What does query do? Every single word in the search can have maximum one character change (`maxEdits`) and it is evaluated under certain number of possibilities (`maxExpansions`).
 - It will now return the relevant records as shown in the below.
 
 ![newyork_fuzzy](screenshots/newyork_fuzzy.png)
@@ -481,16 +485,16 @@ We want our search engine to be tolerant with certain limits, in the case if we 
 ### 16.8 - Another tests
 
 - Extra
-	- Do another search: "*goodfather*". It should match with 4 results. In order to match exact movie "godfather", there has to be only one character removal therefore search engine brings the movies related to "*Godfather*"
-	- But, what if we write "*foodfather*"? There will be no match. In order to allow 2 character change, change the parameter `maxEdits` from `1` to `2`.	And search again. Results should look like below:
+  - Do another search: "*goodfather*". It should match with 4 results. In order to match exact movie "godfather", there has to be only one character removal therefore search engine brings the movies related to "*Godfather*"
+  - But, what if we write "*foodfather*"? There will be no match. In order to allow 2 character change, change the parameter `maxEdits` from `1` to `2`.	And search again. Results should look like below:
 
 ![foodfather](screenshots/foodfather.png)
 
 ---
 
-## 17) Auto Complete 
+## 17) Auto Complete
 
-We'd like to help our customers to find the movies quickly even they don't know the exact spelling. 
+We'd like to help our customers to find the movies quickly even they don't know the exact spelling.
 
 Firstly, our frontend should support proper rendering as long as we type the characters. Therefore we need to use proper HTML/CSS/Javascript combination. Luckily, it's already been embedded in `index.html` , therefore you don't need to have big changes. Only a few changes we'll do in `index.html`
 
@@ -519,10 +523,13 @@ Create the `autocomplete` search index on the field `title` in the collection `s
 
 ![](screenshots/create_autocomplete_index.png)
 
+### 17.1 - Change the url
 
-### 17.1 - Locate the TypeAhead CSS Section in `templates/index.html`
+Change the url to `http://localhost:5010/autocomplete_test`
 
-There is one CSS library `TypeAhead` which allows to render an HTML section as you type. 
+### 17.2 - Locate the TypeAhead CSS Section in `templates/index.html`
+
+There is one CSS library `TypeAhead` which allows to render an HTML section as you type.
 
 Please locate the following block in the `index.html` file.
 
@@ -533,90 +540,74 @@ Please locate the following block in the `index.html` file.
         minLength: 3
     },
     {
-        source: function () {}
-    });
-```
-When you type something and the length of the word is at least 3 (`minLength`) , the function in the `source` parameter is called. Since there is an empty function, nothing has happened so far. 
-
-### 17.2 Action: Change the source function to `findMovieTitles()`. And refresh the HTML page. Therefore this section will look like as shown in the below:
-
-```css
-    $('#custom-search-input .typeahead').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 3
-    },
-    {
-        source: findMovieTitles()
+        source: findMovieTitles ()
     });
 ```
 
-Don't forget to refresh HTML page.
+When you type something and the length of the word is at least 3 (`minLength`) , the function in the `source` parameter is called. Since there is an empty function, nothing has happened so far.
 
 ### 17.3 - Understand the Javascript function `findMovieTitles()`
 
-In the `index.html` file, locate the javascript function `findMovieTitles()`. This function makes an HTTP GET call to the backend endpoint `/autocomplete` with the given parameter. We will analyze this backend endpoint later. As you type some characters and if the length of the characters is 3 or more, then this backend endpoint is called.
+In the `autocomplete_test.html` file, locate the javascript function `findMovieTitles()`. This function makes an HTTP GET call to the backend endpoint `/autocomplete` with the given parameter. We will analyze this backend endpoint later. As you type some characters and if the length of the characters is 3 or more, then this backend endpoint is called.
 
 No need to change anything here.
 
-
 ### 17.4 - Understand the Backend Function `autocomplete()`
 
-In the `server.py`, locate the endpoint `/autocomplete`. Whenever user types 3 or more characters, this backend is called and the search aggregation query is  executed. 
+In the `server.py`, locate the endpoint `/autocomplete`. Whenever user types 3 or more characters, this backend is called and the search aggregation query is  executed.
 
 - Observe the following parameters.
-	- We didn't use `default` search index, rather we create dedicated search index for `autocomplete` operation in Step 17.1.
-	- This autocomplete index a bit customized for `autocomplete` operation. Check the parameters `minGrams` and `maxGrams`.
-		- We specify the index name in the `index` field. e.g. `"index" : "title_autocomplete"`
-	- We use the operator `autocomplete` rather than `text` or `phrase`.
-	- We can even specify the `path` and `fuzzy` option for `autocomplete`. `fuzzy` option is similar as we did before in Step 16.
-	
-
-
+  - We didn't use `default` search index, rather we create dedicated search index for `autocomplete` operation in Step 17.1.
+  - This autocomplete index a bit customized for `autocomplete` operation. Check the parameters `minGrams` and `maxGrams`.
+    - We specify the index name in the `index` field. e.g. `"index" : "title_autocomplete"`
+  - We use the operator `autocomplete` rather than `text` or `phrase`.
+  - We can even specify the `path` and `fuzzy` option for `autocomplete`. `fuzzy` option is similar as we did before in Step 16.
 
 ### 17.5 - Test the changes
 
-Please make sure you've already changed the `index.html` (for triggering the necessary JS function as you type) and refresh the page.
+Please make sure you've already changed the `autocomplete_test.html` (for triggering the necessary JS function as you type) and refresh the page.
 
 ### Observation:
 
-- Write "*scar*" into the search field and wait. It will populate 5 records just under the text field as shown in the below. 
+- Write "*scar*" into the search field and wait. It will populate 5 records just under the text field as shown in the below.
 
 ![](screenshots/autocomplete_scar.png)
-
 
 For more details about the `autocomplete` operator, please check [this](https://docs.atlas.mongodb.com/reference/atlas-search/autocomplete/) link.
 
 ---
 
-## 18) Highlighting the Title 
+## 18) Highlighting the Title
 
 ### 18.1 - What do we need
 
 We'd like to make a search on any field, however we'd like terms to be more visible if the term appears in the `title` field. For this purpose, we can use `highlight` operator that lets search engine to calculate which words are going to be highlighted. Our aggregation query results will include one more array field `highlights`  and in frontend we can consume this data.
 
-### 18.1 - How it works
+### 18.2 - How it works
 
 - Check the content of the file `queries/query10.json` and observe the parameters `text` and `highlight` in the `$search` stage. While we let search engine to search the words in any field in the default index, we inform that we want to get highlighted data on the `title` field. After this query gets executed, it will populate one more array field `highlights` in the return document, which includes the words which needs to be highlighted. An example is in the below:
 
-![](screenshots/highlights_array_field.png)  
+![](screenshots/highlights_array_field.png)
 
-We searched the term "*Godfather*" in any field, and we spesified that if the searched term appears in the `title` field it should be highlighted. Now, we have `highlights` array field for the movies where `title` field includes the matched term and this `highlights` array field has array field `texts` and this array field has elements. 
+We searched the term "*Godfather*" in any field, and we spesified that if the searched term appears in the `title` field it should be highlighted. Now, we have `highlights` array field for the movies where `title` field includes the matched term and this `highlights` array field has array field `texts` and this array field has elements.
 
 - If the term inside the collection matches with the searchted term (e.g. Godfather)  then the value of the field `type` is going to be `hit` and we can consume this data in the frontend.
 
-### 18.2 - Locate where the `title` field is rendered in frontend
+### 18.3 - Change the url
 
-Open the `index.html` and look for the following html section:
+Change the url to `http://localhost:5010/highlight_title_test`
+
+### 18.4 - Locate where the `title` field is rendered in frontend
+
+Open the `highlight_title_test.html` and look for the following html section:
 
 ```javascript
-<li>Title: <span>${doc.title}</span></li>
+${highlightTitle(doc.highlights, doc.title)}
 ```
 
-This function is under `render()` javascript function and basically it is rendering the `title` information as it renders the other fields, without any extra CSS options.
+This highlight title gets 2 parameters, the first one is the text should be highlighted and the title of the movie (both are retrieved from the Atlas Search). 
 
-
-But, we'd like to make it more visible. So, we've already added following CSS block in the `index.html` page:
+We use the following CSS block to highlight the titles in the 
 
 ```css
  .highlight {
@@ -627,36 +618,13 @@ But, we'd like to make it more visible. So, we've already added following CSS bl
   }
 ```
 
-We'll use this CSS block to highlight relevant data. 
+We'll use this CSS block to highlight relevant data.
 
-Locate the javascript function `function highlightTitle(highlights_arr, title)`. This function gets two paremeters, `highlights_arr` and `title`. We will execute this javascript function for every record which returned from search engine. If there is an array field `highlights` returned from the search engine,  and if this highlighted term is for the field `title` then, we will add CSS class `highlight` while rendering `title` information as shown in the below:
-
-```css
-<span class="highlight"><b>${item.value}</b></span>
-```
-
-If there is not `highlights` array field, we will render as we render other field. 
-
-### 18.3 - Action: We have to change how `title` field is rendered
-
- Open the `index.html` and look for the following html section:
-
-```javascript
-<li>Title: <span>${doc.title}</span></li>
-```
-
-Change that line with the following:
-```javascript
-${highlightTitle(doc.highlights, doc.title)}
-```
-
-Refresh the HTML page in the browser.
-
-### 18.4 - Modify the `server.py` file 
+### 18.5 - Modify the `server.py` file
 
 Open the `server.py` and update the query file location to `queries/query10.json`.
 
-### 18.5 - Test the changes
+### 18.6 - Test the changes
 
 - Make a search with the following word: "*godfather*"
 - Make a search with the following word: "*goodfather*" . Since `fuzzy` search is also enabled, you can still see the results.
@@ -668,41 +636,29 @@ You should see the results as shown in the below:
 
 ## 19) Highlighting the Fullplot
 
-We've already highlighted the field `title`. Let's do it for `fullplot` field as well. 
+We've already highlighted the field `title`. Let's do it for `fullplot` field as well.
 
-We've already have a javascript function for rendering `fullplot` field. 
+We've already have a javascript function for rendering `fullplot` field.
 
-### 19.1 - Action: Change rendering javascript function of `fullplot` field
+### 19.1 - Change the url
 
-Locate the following section in the `index.html` page.
-
- ```javascript
- <p>${doc.fullplot}</p>
- ```
-
-Change it to the following:
-
- ```javascript
-<p>${highlightFullplot(doc.highlights, doc.fullplot)}</p>
- ```
+Change the url to `http://localhost:5010/highlight_fullplot_test`
 
 ### 19.2 - Observe
 
-- Check the content of the file `queries/query11.json`. 
+- Check the content of the file `queries/query11.json`.
 - Observe the `highlight` operator, now it is going to be highlighted both `title` and `fullplot` fields.
 
-### 19.2 - Modify the `server.py` file 
+### 19.3 - Modify the `server.py` file
 
 - We'll change the backend aggregation query to highlight both `title` and `fullplot` field
-- Change the accessed filename in `server.py` to `queries/query11.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query11.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
-### 19.3 - Test
+### 19.4 - Test
 
 Make a search with the word "*Godfather*" again. Now, you'll see that `fullplot` field is also highlighted as `title` field.
 
 ![](screenshots/highlight_search_results_2.png)
-
-
 
 For more details about highlighting, visit this link https://docs.atlas.mongodb.com/reference/atlas-search/highlighting/.
 
@@ -710,9 +666,9 @@ For more details about highlighting, visit this link https://docs.atlas.mongodb.
 
 ## 20) Compound Queries
 
-The `compound` operator allows to combine multiple operators into one single query. 
+The `compound` operator allows to combine multiple operators into one single query.
 
-### 20.1 - Scenario 
+### 20.1 - Scenario
 
 Our scenario is searching on different words/phrases on multiple fields. We want to search for the word "*crime*" in any field and it must match. On top of that, we would like to search on other fields as well. At least one of the filters in the below should match:
 
@@ -729,7 +685,7 @@ We can merge this kind of multiple different queries into one single query with 
 
 ### 20.3 - Observe the backend
 
-- Check the backend endpoint `/searchCompound` in the `server.py` file. It consumes multiple parameters and replaces the placeholder in the file `query12.json`. 
+- Check the backend endpoint `/searchCompound` in the `server.py` file. It consumes multiple parameters and replaces the placeholder in the file `query12.json`.
 
 ### 20.4 - Observe the frontend
 
@@ -739,12 +695,12 @@ We can merge this kind of multiple different queries into one single query with 
 
 - Open the web page: http://{serverhost:port}/compound
 - Fill out the forms with the below input:
-	- Search in all fields: "*crime*"
-	- Search in `title` : "*kill*"
-	- Search in `fullplot` : "*detective*"
-	- Search in `plot` : "*ruthless*"
-	- Search in `cast` : *"Donnie Yen"*
-	- Hit the `Search` button
+  - Search in all fields: "*crime*"
+  - Search in `title` : "*kill*"
+  - Search in `fullplot` : "*detective*"
+  - Search in `plot` : "*ruthless*"
+  - Search in `cast` : *"Donnie Yen"*
+  - Hit the `Search` button
 
 You should see the movie "SPL: Kill Zone" as first, because it matches "*crime*" and it matches more than one clause in the `should` section of the `$search` query.  The given words don't have to match with the fields `title`, `fullplot`, `plot`. `cast` but one of them should match. If it matches more than one field, score will be higher.
 
@@ -759,17 +715,17 @@ You should see the movie "SPL: Kill Zone" as first, because it matches "*crime*"
 - Check the content of the file `queries/query13.json`.
 - Observe the query.
 
-### 21.2 - Modify the `server.py` file 
+### 21.2 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query13.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query13.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 - Open the browser and visit the page http://{serverhost:serverport}/
 - Make a search with the word : "*godfather*"
 
-Interpretation of the results: The problem here is that, our intention was to search the movie '*The Godfather*' or '*Godfather*' and we were expecting this movies should be listed in the top. However, in the top, you see another movie, "*C(r)ook*" and it has the word "*Godfather*" in the `fullplot` field. 
+Interpretation of the results: The problem here is that, our intention was to search the movie '*The Godfather*' or '*Godfather*' and we were expecting this movies should be listed in the top. However, in the top, you see another movie, "*C(r)ook*" and it has the word "*Godfather*" in the `fullplot` field.
 
-### 21.3 - What we want to do 
+### 21.3 - What we want to do
 
-How we can customize our search that if the word appears in the field `title` it should have much higher score than the records those have the word in another fields? 
+How we can customize our search that if the word appears in the field `title` it should have much higher score than the records those have the word in another fields?
 
 We can use score boosting.
 
@@ -781,15 +737,14 @@ We can use score boosting.
 
 ### 21.5 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query14.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
-
+- Change the accessed filename in `server.py` to `queries/query14.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 21.6 - Test the changes
 
 - Open the browser and visit the page: http://{serverhost:serverport}/
 - Search the term: "*Godfather*"
 
-Now you'll see the movies in the top if they have the word "*Godfather*" in the `title` field. 
+Now you'll see the movies in the top if they have the word "*Godfather*" in the `title` field.
 
 ![](screenshots/after_boosting.png)
 
@@ -806,6 +761,7 @@ $ mongoimport --uri mongodb+srv://main_user:*******@fuattest2.5tka5.mongodb.net/
 ```
 
 ### 22.1 - Verification of the Arabic dataset
+
 After the Arabic dataset is loaded, please check the following collection: `arabic.poem`
 
 You should be able to see Arabic characters as shown in the below:
@@ -872,10 +828,7 @@ Open the Aggregation Builder in either MongoDB Compass or Atlas UI and import th
 
 ![](screenshots/arabic_search_results.png)
 
-
-
 ---
-
 
 ## 23) Span Operator
 
@@ -888,38 +841,38 @@ We can use span operator to search words in a specific location of the document.
 
 ### 23.2 - Modify the `server.py` file
 
-- Change the accessed filename in `server.py` to `queries/query15.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+- Change the accessed filename in `server.py` to `queries/query15.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 23.1 - Test the changes
 
 - Open the main page
 - Make a search on the word:
-	- "*american*"
-		- Interpretation of the results: It will show the movies where title of the movie starts with the word `american`
-		- ![span_american](screenshots/span_american.png)
-	- "*player*"
-		- Interpretation of the results: There will be no results because there is not any movie where `title` of the movie starts with the word `player`
+  - "*american*"
+    - Interpretation of the results: It will show the movies where title of the movie starts with the word `american`
+    - ![span_american](screenshots/span_american.png)
+  - "*player*"
+    - Interpretation of the results: There will be no results because there is not any movie where `title` of the movie starts with the word `player`
 
 ### 23.2 - Changing the `endPositionLte` parameter to 2
 
-Change the parameter `endPositionLte` from 1 to 2 in the file `queries/query15.json`. 
+Change the parameter `endPositionLte` from 1 to 2 in the file `queries/query15.json`.
 
 - Make a search for the word "*player*" again
-	- Interpretation of the results: There will be 1 result because we let search engine to bring the movies where `title` field matches the word "*player*" either 1st or 2nd term in the `title` field
+  - Interpretation of the results: There will be 1 result because we let search engine to bring the movies where `title` field matches the word "*player*" either 1st or 2nd term in the `title` field
 
 ### 23.3 - Changing the `endPositionLte` parameter to 3
 
-Change the parameter `endPositionLte` from 2 to 3 in the file `queries/query15.json`.  
+Change the parameter `endPositionLte` from 2 to 3 in the file `queries/query15.json`.
 
 - Make a search for the word "*player*" again
-	- Interpretation of the results: There will be 2 results because we let search engine to bring the movies where `title` field matches the word "*player*" with 1st or 2nd or 3rd term in the `title` field
-	- ![span_player](screenshots/span_player.png)
+  - Interpretation of the results: There will be 2 results because we let search engine to bring the movies where `title` field matches the word "*player*" with 1st or 2nd or 3rd term in the `title` field
+  - ![span_player](screenshots/span_player.png)
 
 ---
 
 ## 24) Wildcard Search in the `title` field
 
-We'd like to execute wildcard search on the `title` and/or `fullplot` fields. 
+We'd like to execute wildcard search on the `title` and/or `fullplot` fields.
 
 ### 24.1 - Create Keyword Analyzer Index
 
@@ -944,14 +897,14 @@ Create a new search index with the name "keyword_title_fullplot" and below mappi
 }
 ```
 
-### 24.2 - Observe 
+### 24.2 - Observe
 
 - Check the content of the file `queries/query16.json`.
-- Observe the `wildcard` operator. 
+- Observe the `wildcard` operator.
 
 ### 24.3 - Modify the `server.py` file
 
-Change the accessed filename in `server.py` to `queries/query16.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+Change the accessed filename in `server.py` to `queries/query16.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 24.4 - Test the changes
 
@@ -969,14 +922,14 @@ Notice the search score, it is all `1` for every record.
 
 If you haven't created the search index with Keyword Analyzer in Step 24, you should create it.
 
-### 25.1 - Observe 
+### 25.1 - Observe
 
 - Check the content of the file `queries/query17.json`.
 - Observe the `wildcard` operator and `path` parameter.
 
 ### 25.2 - Modify the `server.py` file
 
-Change the accessed filename in `server.py` to `queries/query17.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+Change the accessed filename in `server.py` to `queries/query17.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 25.3 - Test the changes
 
@@ -994,16 +947,16 @@ Notice that not individual words are highlighted, entire field is highlighted si
 
 ## 26) Regex Search in the `title` field
 
-In order to apply regular expression based search, we can use Keyword Analyzed index, as we used in Step 24 and Step 25. 
+In order to apply regular expression based search, we can use Keyword Analyzed index, as we used in Step 24 and Step 25.
 
-### 26.1 - Observe 
+### 26.1 - Observe
 
 - Check the content of the file `queries/query18.json`.
 - Observe the `regex` operator and `path` parameter.
 
 ### 26.2 - Modify the `server.py` file
 
-Change the accessed filename in `server.py` to `queries/query18.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+Change the accessed filename in `server.py` to `queries/query18.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 26.3 - Test the changes
 
@@ -1012,11 +965,7 @@ Search with the following clause:
 - *(.\*) Italy|(.\*) London|(.\*) Germany*
 - It will search the movie titles where it ends with one of the country names given above
 
-
-
 ![regex01](screenshots/regex01.png)
-
-
 
 ### 26.4 - Another Test
 
@@ -1049,28 +998,26 @@ Search with the following clause:
 
 ---
 
-## 27) Querystring 
+## 27) Querystring
 
 We'd like to build a search query with multiple conditions on multiple indexed fields.
 
-### 27.1 - Observe 
+### 27.1 - Observe
 
 - Check the content of the file `queries/query19.json`.
 - Observe the `regex` operator and `path` parameter.
 
 ### 27.2 - Modify the `server.py` file
 
-Change the accessed filename in `server.py` to `queries/query19.json`. And save the file `server.py`, it triggers servers to reload the files automatically. 
+Change the accessed filename in `server.py` to `queries/query19.json`. And save the file `server.py`, it triggers servers to reload the files automatically.
 
 ### 27.3 - Test the changes
 
 Search with the following clause:
 
 - *(title: Italian OR fullplot: dream) AND cast: Clara*
-  - It will search the movies where `title` has the word "*Italian*" OR the field `fullplot` has the word "*dream*" AND `cast` array field should have the value "*Clara*" 
+  - It will search the movies where `title` has the word "*Italian*" OR the field `fullplot` has the word "*dream*" AND `cast` array field should have the value "*Clara*"
   - See the output as shown in the below.
-
-
 
 ![querystring](screenshots/querystring.png)
 
@@ -1086,7 +1033,7 @@ var accessTokenMapBox = 'pk.*****************uSA'
 
 ## 27.1 - Creating the Geospatial Search Index
 
-We'll have a new search index in different collection, `sample_airbnb.listingsAndReviews` on the field `address.location`. 
+We'll have a new search index in different collection, `sample_airbnb.listingsAndReviews` on the field `address.location`.
 
 In order to execute GeoSpatial queries in Atlas Search, we need to have specify the fields for Geo objects while creating index.
 
@@ -1109,8 +1056,6 @@ In order to execute GeoSpatial queries in Atlas Search, we need to have specify 
 }
 ```
 
-
-
 Verification of index creation:
 
 ![geo_spatial_index_created](screenshots/geo_spatial_index_created.png)
@@ -1123,23 +1068,22 @@ Verification of index creation:
 
 ### 27.2.2 - Observe
 
-- Open the file `queries/query30.json` and observe the field `geoWithin`, `circle`, `center`, `radius`  fields under `$search` 
+- Open the file `queries/query30.json` and observe the field `geoWithin`, `circle`, `center`, `radius`  fields under `$search`
 
 ### 27.2.3 - Backend
 
-- Open the file `server.py` 
-- Find the function `geo_within()` 
+- Open the file `server.py`
+- Find the function `geo_within()`
 - Analyze the `if` block starts with:
-  - `    if ( query_parameter_shape == "circle" ):` 
+  - `    if ( query_parameter_shape == "circle" ):`
 - Frontend sends the following parameter:
-  - radius 
-  - Latitude and longtitude of the center 
+  - radius
+  - Latitude and longtitude of the center
 - Then backend executes the `$search` aggregation query.
 
 ### 27.2.4 - Test
 
-- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
-
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin`
 - Zoom-in enough to the city Barcelona to reach below level:
 
 ![circle01](screenshots/circle01.png)
@@ -1168,14 +1112,14 @@ Verification of index creation:
 
 ### 27.2.2 - Observe
 
-- Open the file `queries/query31.json` and observe the field `geoWithin`, `box`, `bottomLeft`, `topRight`  fields under `$search` 
+- Open the file `queries/query31.json` and observe the field `geoWithin`, `box`, `bottomLeft`, `topRight`  fields under `$search`
 
 ### 27.2.3 - Backend
 
-- Open the file `server.py` 
-- Find the function `geo_within()` 
+- Open the file `server.py`
+- Find the function `geo_within()`
 - Analyze the `if` block starts with:
-  - `    if ( query_parameter_shape == "box" ):` 
+  - `    if ( query_parameter_shape == "box" ):`
 - Frontend sends the following parameter:
   - Latitude and longtitude of the bottom left point
   - Latitude and longtitude of the bottom top right
@@ -1184,13 +1128,13 @@ Verification of index creation:
 
 ### 27.2.4 - Test
 
-- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin`
 - In the top dropdown menu choose `Box` rather than `Circle`
 - Automatically Box related settings will be shown as shown in the below.
 
 ![box01](screenshots/box01.png)
 
-- Zoom in enough to the center of the city Barcelona. 
+- Zoom in enough to the center of the city Barcelona.
 - Find a location to position `Bottom Left` point and click on the map.
 - Then find another location to position `Top Right` point and click on the map. Box shape will be automatically drawn (just after second marker). Don't forget, `Top Right` position must be position than the `Bottom Left`.
 
@@ -1208,16 +1152,16 @@ Verification of index creation:
 
 ### 27.4.1 - Scenario
 
-- We'd like to find properties in a polygon shape. 
+- We'd like to find properties in a polygon shape.
 
 ### 27.4.2 - Observe
 
-- Open the file `queries/query32.json` and observe the field `geoWithin`  field under `$search` 
+- Open the file `queries/query32.json` and observe the field `geoWithin`  field under `$search`
 
 ### 27.4.3 - Backend
 
-- Open the file `server.py` 
-- Find the function `geo_within()` 
+- Open the file `server.py`
+- Find the function `geo_within()`
 - Analyze the `if` block starts with:
   - `    elif  ( query_parameter_shape in ["polygon","multipolygon"] ):`
 - Frontend sends the following parameter:
@@ -1227,14 +1171,14 @@ Verification of index creation:
 
 ### 27.4.4 - Test
 
-- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin`
 - In the top dropdown menu choose `Polygon` rather than `Circle`
 - Automatically Polygon related settings will be shown as shown in the below.
 
 ![polygon01](screenshots/polygon01.png)
 
-- Zoom in enough to the center of the city Barcelona. 
-- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over. 
+- Zoom in enough to the center of the city Barcelona.
+- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over.
 - After you add the 3rd point, the polygon will be drawn automatically. You can add more points.
 - After you add some points, you will end up a polygon as shown in the below.
 
@@ -1254,14 +1198,14 @@ Verification of index creation:
 
 ### 27.5.1 - Test
 
-- Open the browser and access to the following url: `http://localhost:5010/geoWithin` 
+- Open the browser and access to the following url: `http://localhost:5010/geoWithin`
 - In the top dropdown menu choose Polygon rather than `Circle`
 - Automatically Polygon related settings will be shown as shown in the below.
 
 ![polygon01](screenshots/polygon01.png)
 
-- Zoom in enough to the center of the city Barcelona. 
-- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over. 
+- Zoom in enough to the center of the city Barcelona.
+- Start to add points by clicking on the map. If you mistakenly add a point, then hit the `Clear` button to start over.
 - After you add the 3rd point, the polygon will be drawn automatically.
 - After you add some points, you will end up a polygon as shown in the below.
 
@@ -1279,13 +1223,11 @@ Verification of index creation:
 
 ![multipolygon03](screenshots/multipolygon03.png)
 
-
-
 ## 28) GeoSpatial and Compound
 
 ### 28.1 - Scenario
 
-We'd like to find the properties around a point where the type of the property (`property_type ` field in the document) should be "apartment" with up to 1 character mistake (fuzzy), and the description (`description` field in the document) might include the following words "duplex air conditioner kitchen public transportation". 
+We'd like to find the properties around a point where the type of the property (`property_type ` field in the document) should be "apartment" with up to 1 character mistake (fuzzy), and the description (`description` field in the document) might include the following words "duplex air conditioner kitchen public transportation".
 
 We'd like to boost the records if it is close to the point which we specified.
 
@@ -1318,20 +1260,18 @@ We'll create an index where has Geolocation field ( `address.location` ) indexed
 }
 ```
 
-
-
 Verification of index creation:
 
 ![geonear02](screenshots/geonear02.png)
 
 ### 28.3 - Observe
 
-- Open the file `queries/query34.json` and observe the field `compound`  , `should` , `must` , `near` field under `$search` 
+- Open the file `queries/query34.json` and observe the field `compound`  , `should` , `must` , `near` field under `$search`
 
 ### 27.4.3 - Backend
 
-- Open the file `server.py` 
-- Find the function `geo_near()` 
+- Open the file `server.py`
+- Find the function `geo_near()`
 - Frontend sends the following parameter:
   - Latitude and longtitude of the center point
   - Pivot parameter
@@ -1341,20 +1281,19 @@ Verification of index creation:
 
 ### 27.4.4 - Test
 
-- Open the browser and access to the following url: `http://localhost:5010/geoNear` 
+- Open the browser and access to the following url: `http://localhost:5010/geoNear`
 - Find the center of the city Barcelona and click on the map, it will drop a marker on the map.
 - You should see the below screen.
 
 ![geonear03](screenshots/geonear03.png)
 
 - Then fill out the form with the following parameters:
+
   - Pivot value: 10000
   - Property type: "aparment" (we'll test fuzzy too)
   - Keyword (Description) :  "duplex air conditioner kitchen public transportation"
-
 - And then hit the `Search` button and you'll see the below screen.
 
 ![geonear04](screenshots/geonear04.png)
 
 As you click on a marker, in just below of the map, you'll see the `description` of the property (`description` field in the document).
-

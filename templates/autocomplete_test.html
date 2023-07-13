@@ -117,6 +117,13 @@
     font-weight: 100;
   }
 
+  .highlight {
+    background-color: #a94442;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
 
 </style>
 
@@ -165,11 +172,47 @@
 <script>
 
 
+function findMovieTitles(q, syncResults, asyncResults) {
+        return function findMovieMatches(q, syncResults, asyncResults) {
+            var matches= [];
+            var letters = $('#search_box').val();
+
+            $.ajax(
+                {
+                    url: `/autocomplete?query=${letters}&path=title`,
+                    type: "GET",
+                    data: {
+                        arg: q
+                    },
+                    success: function(data, status, xhr) {
+                        console.log("Data: " + JSON.stringify(data));
+                        data.forEach(function(item, index) {
+                            matches.push(item.title);
+                        })
+                        asyncResults(matches);
+                    },
+                    error: function(jqXhr, textStatus, err) {
+                        console.log("Error: " + err);
+                    }
+                }
+            )
+        }
+    }
 
     $("#search_box").keydown(function(e){
     if(e.which === 13){
         $("#search_button").click();
     }
+    });
+
+       
+    $('#custom-search-input .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 3
+    },
+    {
+        source: findMovieTitles ()
     });
 
   
@@ -188,8 +231,6 @@
         });
 
     });
-  
-
 
   function render(letters, results) {
     var placholder = $('#search-results-placholder');
