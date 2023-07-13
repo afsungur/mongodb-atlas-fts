@@ -563,9 +563,7 @@ In the `server.py`, locate the endpoint `/autocomplete`. Whenever user types 3 o
   - We use the operator `autocomplete` rather than `text` or `phrase`.
   - We can even specify the `path` and `fuzzy` option for `autocomplete`. `fuzzy` option is similar as we did before in Step 16.
 
-### 17.5 - Test the changes
-
-Please make sure you've already changed the `autocomplete_test.html` (for triggering the necessary JS function as you type) and refresh the page.
+### 17.5 - Test
 
 ### Observation:
 
